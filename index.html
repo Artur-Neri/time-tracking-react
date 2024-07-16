@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/jsx">
+
+
+
+        const activities = [
+        {
+          "title": "Work",
+          "style": "card-work",
+          "timeframes": {
+            "daily": {
+              "current": 5,
+              "previous": 7
+            },
+            "weekly": {
+              "current": 32,
+              "previous": 36
+            },
+            "monthly": {
+              "current": 103,
+              "previous": 128
+            }
+          }
+        },
+        {
+          "title": "Play",
+          "style": "card-play",
+          "timeframes": {
+            "daily": {
+              "current": 1,
+              "previous": 2
+            },
+            "weekly": {
+              "current": 10,
+              "previous": 8
+            },
+            "monthly": {
+              "current": 23,
+              "previous": 29
+            }
+          }
+        },
+        {
+          "title": "Study",
+          "style": "card-study",
+          "timeframes": {
+            "daily": {
+              "current": 0,
+              "previous": 1
+            },
+            "weekly": {
+              "current": 4,
+              "previous": 7
+            },
+            "monthly": {
+              "current": 13,
+              "previous": 19
+            }
+          }
+        },
+        {
+          "title": "Exercise",
+          "style": "card-exercise",
+          "timeframes": {
+            "daily": {
+              "current": 1,
+              "previous": 1
+            },
+            "weekly": {
+              "current": 4,
+              "previous": 5
+            },
+            "monthly": {
+              "current": 11,
+              "previous": 18
+            }
+          }
+        },
+        {
+          "title": "Social",
+          "style": "card-social",
+          "timeframes": {
+            "daily": {
+              "current": 1,
+              "previous": 3
+            },
+            "weekly": {
+              "current": 5,
+              "previous": 10
+            },
+            "monthly": {
+              "current": 21,
+              "previous": 23
+            }
+          }
+        },
+        {
+          "title": "Self Care",
+          "style": "card-selfCare",
+          "timeframes": {
+            "daily": {
+              "current": 0,
+              "previous": 1
+            },
+            "weekly": {
+              "current": 2,
+              "previous": 2
+            },
+            "monthly": {
+              "current": 7,
+              "previous": 11
+            }
+          }
+        }
+      ]
+
+        
+
+        function ProfileCard(props) {
+            const timeFrameState = props.timeFrameState;
+            
+            const funcSetTimeFrame = props.setTimeFrameState;
+
+            return (
+                <div className="card-profile">
+                    <div className="card-profile-info">
+                        <div className="card-profile-info-img">
+                            <img src={props.imageUrl} alt={`Profile Picture of ${props.name}`} />
+                        </div>
+                        <div className="card-profile-info-text">
+                            <p>Report for</p>
+                            <h1 className="card-profile-name">{props.name}</h1>
+                        </div>
+                    </div>
+
+                    <TimeFrames currentTimeFrameState={timeFrameState} setCurrentTimeFrameState={funcSetTimeFrame}/>
+
+                </div>
+            )
+        }
+        
+        function TimeFrames({ currentTimeFrameState, setCurrentTimeFrameState }) {
+            const timeFrames = ['daily','weekly','monthly'];
+
+            const currentTimeFrame = currentTimeFrameState;
+            const setCurrentTimeFrame = setCurrentTimeFrameState;
+
+            const activeTimeFrameClassList = "view-active"
+            const inactiveTimeFrameClassList = ""
+
+            return (
+                <ul className="card-profile-view">
+                    {timeFrames.map((tf) => (
+                        <TimeFrame
+                        key={tf}
+                        timeframe={tf}
+                        classList={tf === currentTimeFrame ? 'view-active' : ''}
+                        onClick={() => setCurrentTimeFrame(tf)}
+                        />
+                    ))}
+                </ul>
+                )
+        }
+
+        function TimeFrame({onClick, classList, timeframe}) {
+            return <li onClick={onClick} className={classList}>{timeframe}</li>
+        }
+
+        function ActivityCard(props) {
+            console.log(props.current.daily.current)
+            const currentTimeFrame = props.timeFrame;
+            return <div className={`card-activity ${props.style}`}>
+
+                        <div className="card-activity-info">
+                            <div className="card-activity-info-title">
+                                <h2>{props.title}</h2>
+                                <img src="./images/icon-ellipsis.svg" alt="activity options" />
+                            </div>
+                            <div className="card-activity-info-content">
+                                <CurrentAmount currentTimeFrame={currentTimeFrame} currentTimes={props.current}/>
+                                <PreviousAmount currentTimeFrame={currentTimeFrame} currentTimes={props.current}/>
+                            </div>
+                        </div>
+
+                    </div>
+        }
+
+        function CurrentAmount({currentTimeFrame, currentTimes}) {
+          let currentAmount;
+          if (currentTimeFrame === 'daily') {
+            currentAmount = currentTimes.daily.current;
+          } else if (currentTimeFrame === 'weekly') {
+            currentAmount = currentTimes.weekly.current;
+          } else {
+            currentAmount = currentTimes.monthly.current;
+          }
+          return <h3 className="current-amount">{`${currentAmount}h`}</h3>
+        }
+
+        function PreviousAmount({currentTimeFrame, currentTimes}){
+          let previousAmount;
+          let displayTimeFrame;
+          if (currentTimeFrame === 'daily') {
+            previousAmount = currentTimes.daily.previous;
+            displayTimeFrame = 'day';
+          } else if (currentTimeFrame === 'weekly') {
+            previousAmount = currentTimes.weekly.previous;
+            displayTimeFrame = 'week';
+          } else {
+            previousAmount = currentTimes.monthly.previous;
+            displayTimeFrame = 'month';
+          }
+          return <p className="previous-amount">{`Last ${displayTimeFrame} - ${previousAmount}h`}</p>
+        }
+
+        function HomePage() {
+
+            const [currentTimeFrame, setCurrentTimeFrame] = React.useState('weekly');
+
+            return (
+                <main className="container">
+                    <ProfileCard imageUrl="https://github.com/Artur-Neri.png" name="Artur Neri" timeFrameState={currentTimeFrame} setTimeFrameState={setCurrentTimeFrame}/>
+                    <div className="activities">
+                        {activities.map((activity) => (
+                            <ActivityCard 
+                            key={activity.title}
+                            title={activity.title}
+                            style={activity.style}
+                            timeFrame={currentTimeFrame}
+                            current={activity.timeframes}
+                            previous={activity.timeframes.weekly.previous}
+                            />
+                        ))}
+                    </div>
+                </main>
+            )
+        }
+
+        const app = document.querySelector('#app');
+        const root = ReactDOM.createRoot(app);
+
+        root.render(<HomePage />);
+    </script>
+</body>
+</html>
